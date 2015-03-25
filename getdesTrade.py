@@ -4,6 +4,13 @@ import csv
 import sys
 import datetime
 import time
+import math
+import globalfunc
+
+destrddir=''
+actholddir=''
+desholddir=''
+universedir=''
 
 desholddict={}
 lactholddict={}
@@ -19,16 +26,17 @@ else:
 
 print 'date time is %s' % cdate
 
-cdatetime=time.strptime(cdate,"%Y%m%d")
-ldatetime=time.mktime(cdatetime)-82800
-ldate=time.strftime("%Y%m%d",time.localtime(ldatetime))
+#cdatetime=time.strptime(cdate,"%Y%m%d")
+#ldatetime=time.mktime(cdatetime)-82800
+#ldate=time.strftime("%Y%m%d",time.localtime(ldatetime))
+ldate=globalfunc.getLastDate(cdate)
 
 print 'last date time is %s' % ldate
 
 #=================================
 #        get desire hold
 #=================================
-desholdname=cdate+'.desHold.csv'
+desholdname=desholddir+cdate+'.desHolding.csv'
 print 'get desire hold %s' % desholdname
 reader=csv.reader(file(desholdname,'r'))
 next(reader)
@@ -36,10 +44,10 @@ for line in reader:
 	desholddict[line[0]]=int(line[1])
 
 #=================================
-#     get last date actual hold
+#     get BOD actual hold
 #=================================
-lactholdname=ldate+'.actHold.csv'
-print 'get last date actual hold %s' % lactholdname
+lactholdname=actholddir+cdate+'.actHoldingBOD.csv'
+print 'get actual holding BOD %s' % lactholdname
 
 reader=csv.reader(file(lactholdname,'r'))
 next(reader)
@@ -56,9 +64,18 @@ print 'get vol from %s' % univername
 reader=csv.reader(file(univername,'r'))
 next(reader)
 for line in reader:
-	voldict[line[0]]=int(line[12])
+	index=12
+	if int(line[12])>0:
+		index=12
+	elif int(line[13])>0:
+		index=13
+	elif int(line[14])>0:
+		index=14
+	else:
+		voldict[line[0]]=0
+	voldict[line[0]]=int(line[index])
 
-fname=cdate+'.desTrade.csv'
+fname=universedir+cdate+'.desTrade.csv'
 print 'Begin write data to %s' % fname
 
 #=================================
@@ -74,17 +91,18 @@ for key in desholddict:
 	else:
 		destrd=desholddict[key]
 	avgvol=voldict[key]*0.05/240
-	durtime=(destrd/avgvol)*60
+	if avgvol==0:
+		durtime=0
+	else:
+		durtime=math.ceil((destrd/avgvol)*2)
 	if(durtime<0):
 		destrd=0
 		etimestr=btimestr
 		durtime=0
-	elif durtime==0:
-		durtime+=60
 	else:
-		etime=btime+durtime
+		etime=btime+durtime*60
 		etimestr=time.strftime("%H%M",time.localtime(etime))
-	fd.write("%s,%d,%s,%s,%d\n" % (key,destrd,btimestr,etimestr,durtime/60))
+	fd.write("%s,%d,%s,%s,%d\n" % (key,destrd,btimestr,etimestr,durtime))
 
 fd.close()
 

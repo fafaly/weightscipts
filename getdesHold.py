@@ -5,6 +5,7 @@ import os
 import sys
 import datetime
 import time
+import globalfunc
 
 print '----------get des hold-----------'
 
@@ -16,20 +17,24 @@ else:
 
 print 'date time is %s' % cdate
 
-cdatetime=time.strptime(cdate,"%Y%m%d")
-ldatetime=time.mktime(cdatetime)-82800
-ldate=time.strftime("%Y%m%d",time.localtime(ldatetime))
+#cdatetime=time.strptime(cdate,"%Y%m%d")
+#ldatetime=time.mktime(cdatetime)-82800
+#ldate=time.strftime("%Y%m%d",time.localtime(ldatetime))
+ldate=globalfunc.getLastDate(cdate)
 
 print 'last date time is %s' % ldate
 
 #=================================
-#       get the cash value
+# get actual holding BOD
 #=================================
-reader = csv.reader(file(ldate+'.actHold.csv','rb'))
+reader = csv.reader(file(cdate+'.actHoldingBOD.csv','r'))
 next(reader)
+i=1
 for line in reader:
-	cash=float(line[1])
-	break
+	if i==1:
+		cash=float(line[2])
+	else:
+		clsdict[line[0]]=float(line[2])
 
 print 'cash:%s' % cash
 
@@ -45,16 +50,16 @@ for line in reader:
 #=================================
 #   write data to desire hold
 #=================================
-fname=cdate+'.desHold.csv'
+fname=cdate+'.desHolding.csv'
 print 'write to %s' % fname
-reader = csv.reader(file(cdate+'.000300_wt.csv','rb'))
+reader = csv.reader(file(cdate+'.weight.csv','rb'))
 fd=open(fname,'w+')
 fd.write('#tk,shares\n')
 next(reader)#ignore the first line
 for line in reader:
-	tk=line[1][0:6]
+	tk=line[0]
 	if clsdict.has_key(tk):
-		shr=cash*float(line[4])/clsdict[tk]
+		shr=cash*float(line[1])/clsdict[tk]
 	else:
 		shr=0
 	fd.write("%s,%d\n" % (tk,shr))
