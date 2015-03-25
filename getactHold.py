@@ -5,6 +5,9 @@ import sys
 import datetime
 import time
 
+dpxdir='/z/data/WindTerminal/dpx/'
+
+
 print '----------get actual hold-----------'
 
 if(len(sys.argv)==1):
@@ -74,7 +77,7 @@ cash+=tcash-comtax-stamptax-transtax
 #    get today's close price value
 #=================================
 clsdict={}
-reader = csv.reader(file(cdate+'.dpx.csv','r'))
+reader = csv.reader(file(dpxdir+cdate+'.dpx.csv','r'))
 next(reader)
 for line in reader:
 	clsdict[line[0]]=float(line[6])

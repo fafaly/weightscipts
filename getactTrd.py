@@ -6,6 +6,7 @@ import sys
 import datetime
 import time
 
+ipxdir=/z/data/WindTerminal/ipx/
 print '----------get actual trade-----------'
 
 if(len(sys.argv)==1):
@@ -36,7 +37,7 @@ def CalEndTime(btimestr,durtime):
 #=================================
 ipxname=cdate+'.ipx.csv'
 print 'begin to read %s' % ipxname
-reader = csv.reader(file(ipxname,'r'))
+reader = csv.reader(file(ipxdir+ipxname,'r'))
 next(reader)
 ipxdict={}
 for line in reader:
