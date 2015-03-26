@@ -11,6 +11,10 @@ dpxdir='/z/data/WindDB/dpx/'
 actholddir='/z/data/WindDB/production5/portfolio/actHolding/'
 acttrddir='/z/data/WindDB/production5/portfolio/actTrade/'
 spnldir='/z/data/WindDB/production5/portfolio/pnl/'
+dpxdir=''
+actholddir=''
+acttrddir=''
+spnldir=''
 
 
 print '----------get actual hold EOD-----------'
@@ -43,9 +47,9 @@ cash=0
 for line in reader:
 	if i==0:
 		cash=float(line[2])
+		i+=1
 	else:
 		actholddict[line[0]]=int(line[1])
-		i+=1
 #=================================
 # get today's actual trade and avpx
 #   calculate the tax fare
@@ -76,7 +80,7 @@ for line in reader:
 		transtax+=abs(happencash)*6/10000
 	tcash+=happencash	
 cash+=tcash-comtax-stamptax-transtax
-print cash
+
 #=================================
 #    get today's close price value
 #=================================
@@ -101,7 +105,7 @@ for key in actholddict:
 		holdpnl+=actholddict[key]*clsdict[key]
 #cash+=holdpnl
 
-fd.write('CASH,1,%f\n' % (cash+holdpnl))
+fd.write('CASH,1,%f\n' % cash)
 for key in actholddict:
 	if key=='CASH':
 		continue

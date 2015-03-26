@@ -11,6 +11,10 @@ ipxdir='/z/data/WindTerminal/ipx/old/'
 acttrddir='/z/data/WindDB/production5/portfolio/actTrade/'
 destrddir='/z/data/WindDB/production5/portfolio/desTrade/'
 dpxdir='/z/data/WindDB/dpx/'
+ipxdir=''
+acttrddir=''
+destrddir=''
+dpxdir=''
 print '----------get actual trade-----------'
 
 if(len(sys.argv)==1):

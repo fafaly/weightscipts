@@ -9,6 +9,9 @@ import globalfunc
 cacsdir='/z/data/WindDB/cacs/'
 actholdingdir='/z/data/WindDB/production5/portfolio/actHolding/'
 scacsdir='/z/data/WindDB/production5/portfolio/cacs/'
+cacsdir=''
+actholdingdir=''
+scacsdir=''
 
 print '----------get actual hold BOD-----------'
 

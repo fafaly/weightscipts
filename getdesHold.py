@@ -12,6 +12,10 @@ actholddir='/z/data/WindDB/production5/portfolio/actHolding/'
 desholddir='/z/data/WindDB/production5/portfolio/desHolding/'
 weightdir='/z/data/WindDB/production5/portfolio/weight/'
 dpxdir='/z/data/WindDB/dpx/'
+actholddir=''
+desholddir=''
+weightdir=''
+dpxdir=''
 
 print '----------get des hold-----------'
 
@@ -53,7 +57,7 @@ clsdict={}
 reader = csv.reader(file(dpxdir+ldate+'.dpx.csv','r'))
 next(reader)
 for line in reader:
-	clsdict[line[0]]=float(line[6])
+	clsdict[line[0][0:6]]=float(line[6])
 
 #=================================
 #   write data to desire hold

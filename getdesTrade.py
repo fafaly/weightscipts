@@ -11,6 +11,10 @@ destrddir='/z/data/WindDB/production5/portfolio/desTrade/'
 actholddir='/z/data/WindDB/production5/portfolio/actHolding/'
 desholddir='/z/data/WindDB/production5/portfolio/desHolding/'
 universedir='/cygdrive/z/data/WindDB/setting/universe/'
+destrddir=''
+actholddir=''
+desholddir=''
+universedir=''
 
 desholddict={}
 lactholddict={}
@@ -90,12 +94,11 @@ for key in desholddict:
 		destrd=desholddict[key] - lactholddict[key]
 	else:
 		destrd=desholddict[key]
-	destrd=abs(destrd)
 	avgvol=voldict[key]*0.05/240
 	if avgvol==0:
 		durtime=0
 	else:
-		durtime=math.ceil((destrd/avgvol)*2)
+		durtime=math.ceil((abs(destrd)/avgvol)*2)
 	if(durtime<0):
 		destrd=0
 		etimestr=btimestr
