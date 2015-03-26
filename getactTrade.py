@@ -7,8 +7,10 @@ import datetime
 import time
 import globalfunc
 
-#ipxdir=/z/data/WindTerminal/ipx/
-ipxdir=''
+ipxdir='/z/data/WindTerminal/ipx/old/'
+acttrddir='/z/data/WindDB/production5/portfolio/actTrade/'
+destrddir='/z/data/WindDB/production5/portfolio/desTrade/'
+dpxdir='/z/data/WindDB/dpx/'
 print '----------get actual trade-----------'
 
 if(len(sys.argv)==1):
@@ -39,7 +41,7 @@ def CalEndTime(btimestr,durtime):
 #    get the close price value
 #=================================
 clsdict={}
-reader = csv.reader(file(ldate+'.dpx.csv','r'))
+reader = csv.reader(file(dpxdir+ldate+'.dpx.csv','r'))
 next(reader)
 for line in reader:
 	clsdict[line[0]]=float(line[6])
@@ -48,9 +50,9 @@ for line in reader:
 #=================================
 #         read ipx data
 #=================================
-ipxname=cdate+'.ipx.csv'
+ipxname=ipxdir+cdate+'.ipx.csv'
 print 'begin to read %s' % ipxname
-reader = csv.reader(file(ipxdir+ipxname,'r'))
+reader = csv.reader(file(ipxname,'r'))
 next(reader)
 ipxdict={}
 for line in reader:
@@ -60,10 +62,10 @@ for line in reader:
 # read today's desire trade file
 # and write the data
 #=================================
-fname=cdate+'.actTrade.csv'
+fname=acttrddir+cdate+'.actTrade.csv'
 fd=open(fname,'w+')
 fd.write('#tk,shr,BOT,EOT,duration,actual,avgpx\n')
-destrdname=cdate+'.desTrade.csv'
+destrdname=destrddir+cdate+'.desTrade.csv'
 reader = csv.reader(file(destrdname,'r'))
 print 'Begin to read %s' % destrdname
 print 'Begin to write data %s' % fname

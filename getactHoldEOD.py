@@ -7,11 +7,11 @@ import time
 import globalfunc
 #dpxdir='/z/data/WindTerminal/dpx/'
 
+dpxdir='/z/data/WindDB/dpx/'
+actholddir='/z/data/WindDB/production5/portfolio/actHolding/'
+acttrddir='/z/data/WindDB/production5/portfolio/actTrade/'
+spnldir='/z/data/WindDB/production5/portfolio/pnl/'
 
-dpxdir=''
-actholddir=''
-acttrddir=''
-spnldir=''
 
 print '----------get actual hold EOD-----------'
 
@@ -43,10 +43,9 @@ cash=0
 for line in reader:
 	if i==0:
 		cash=float(line[2])
+	else:
+		actholddict[line[0]]=int(line[1])
 		i+=1
-		continue
-	actholddict[line[0]]=int(line[1])
-	i+=1
 #=================================
 # get today's actual trade and avpx
 #   calculate the tax fare
@@ -77,7 +76,7 @@ for line in reader:
 		transtax+=abs(happencash)*6/10000
 	tcash+=happencash	
 cash+=tcash-comtax-stamptax-transtax
-
+print cash
 #=================================
 #    get today's close price value
 #=================================
@@ -85,7 +84,7 @@ clsdict={}
 reader = csv.reader(file(dpxdir+cdate+'.dpx.csv','r'))
 next(reader)
 for line in reader:
-	clsdict[line[0]]=float(line[6])
+	clsdict[line[0][0:6]]=float(line[6])
 
 
 #=================================
@@ -95,15 +94,21 @@ fname=actholddir+cdate+'.actHoldingEOD.csv'
 print 'Begin to write %s' % fname
 fd=open(fname,'w+')
 fd.write('#tk,shr,cls\n')
-fd.write('CASH,1,%f\n' % cash)
+#calculate hold pnl
 holdpnl=0
+for key in actholddict:
+	if clsdict.has_key(key):
+		holdpnl+=actholddict[key]*clsdict[key]
+#cash+=holdpnl
+
+fd.write('CASH,1,%f\n' % (cash+holdpnl))
 for key in actholddict:
 	if key=='CASH':
 		continue
 	if clsdict.has_key(key):
 		cls=clsdict[key]
-		holdpnl+=actholddict[key]*cls
 	else:
+		cls=0
 		print 'clsdict has not key:%s' % key
 	fd.write("%s,%s,%f\n" % (key,actholddict[key],cls))
 

@@ -7,6 +7,12 @@ import datetime
 import time
 import globalfunc
 
+
+actholddir='/z/data/WindDB/production5/portfolio/actHolding/'
+desholddir='/z/data/WindDB/production5/portfolio/desHolding/'
+weightdir='/z/data/WindDB/production5/portfolio/weight/'
+dpxdir='/z/data/WindDB/dpx/'
+
 print '----------get des hold-----------'
 
 if(len(sys.argv)==1):
@@ -27,12 +33,14 @@ print 'last date time is %s' % ldate
 #=================================
 # get actual holding BOD
 #=================================
-reader = csv.reader(file(cdate+'.actHoldingBOD.csv','r'))
+reader = csv.reader(file(actholddir+cdate+'.actHoldingBOD.csv','r'))
 next(reader)
 i=1
+clsdict={}
 for line in reader:
 	if i==1:
 		cash=float(line[2])
+		i=i+1
 	else:
 		clsdict[line[0]]=float(line[2])
 
@@ -42,7 +50,7 @@ print 'cash:%s' % cash
 #    get the close price value
 #=================================
 clsdict={}
-reader = csv.reader(file(ldate+'.dpx.csv','r'))
+reader = csv.reader(file(dpxdir+ldate+'.dpx.csv','r'))
 next(reader)
 for line in reader:
 	clsdict[line[0]]=float(line[6])
@@ -50,9 +58,9 @@ for line in reader:
 #=================================
 #   write data to desire hold
 #=================================
-fname=cdate+'.desHolding.csv'
+fname=desholddir+cdate+'.desHolding.csv'
 print 'write to %s' % fname
-reader = csv.reader(file(cdate+'.weight.csv','rb'))
+reader = csv.reader(file(weightdir+cdate+'.weight.csv','rb'))
 fd=open(fname,'w+')
 fd.write('#tk,shares\n')
 next(reader)#ignore the first line

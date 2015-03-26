@@ -6,9 +6,9 @@ import datetime
 import time
 import globalfunc
 
-cacsdir=''
-actholdingdir=''
-scacsdir=''
+cacsdir='/z/data/WindDB/cacs/'
+actholdingdir='/z/data/WindDB/production5/portfolio/actHolding/'
+scacsdir='/z/data/WindDB/production5/portfolio/cacs/'
 
 print '----------get actual hold BOD-----------'
 
@@ -69,11 +69,11 @@ fd = open(fname,'w+')
 actEOD = actholdingdir + cdate+'.actholdingEOD.csv'
 reader=csv.reader(file(actEOD,'r'))
 for line in reader:
-	if cacsdict.has_key(line[0]):
+	if cacsdict.has_key(line[0]) and line[1]!='0':
 		tk=line[0]
 		shr=int(line[1])*(1+cacsdict[line[0]])
-		cls=int(line[1])*int(lint[2])/shr
-		fd.write("%s,%s,%s\n" % (tk,shr,cls))
+		cls=float(line[1])*float(line[2])/shr
+		fd.write("%s,%d,%s\n" % (tk,shr,cls))
 	else:
 		fd.write("%s,%s,%s\n" % (line[0],line[1],line[2]))
 

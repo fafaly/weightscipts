@@ -3,11 +3,12 @@
 import os
 import sys
 
+universedir='/cygdrive/z/data/WindDB/setting/'
 if len(sys.argv)<2:
 	print 'usage:./runrang.py [start date] [end date]'
 	exit()
 
-fd= open('tradingDates.csv','r')
+fd= open(universedir+'tradingDates.csv','r')
 start=0
 for line in fd:
 	fdate=line[0:8]

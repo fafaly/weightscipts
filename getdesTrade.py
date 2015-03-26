@@ -7,10 +7,10 @@ import time
 import math
 import globalfunc
 
-destrddir=''
-actholddir=''
-desholddir=''
-universedir=''
+destrddir='/z/data/WindDB/production5/portfolio/desTrade/'
+actholddir='/z/data/WindDB/production5/portfolio/actHolding/'
+desholddir='/z/data/WindDB/production5/portfolio/desHolding/'
+universedir='/cygdrive/z/data/WindDB/setting/universe/'
 
 desholddict={}
 lactholddict={}
@@ -59,7 +59,7 @@ if reader:
 #=================================
 #            get vol
 #=================================
-univername=ldate+'_universe.csv'
+univername=universedir+ldate+'_universe.csv'
 print 'get vol from %s' % univername
 reader=csv.reader(file(univername,'r'))
 next(reader)
@@ -75,7 +75,7 @@ for line in reader:
 		voldict[line[0]]=0
 	voldict[line[0]]=int(line[index])
 
-fname=universedir+cdate+'.desTrade.csv'
+fname=destrddir+cdate+'.desTrade.csv'
 print 'Begin write data to %s' % fname
 
 #=================================
@@ -90,6 +90,7 @@ for key in desholddict:
 		destrd=desholddict[key] - lactholddict[key]
 	else:
 		destrd=desholddict[key]
+	destrd=abs(destrd)
 	avgvol=voldict[key]*0.05/240
 	if avgvol==0:
 		durtime=0
