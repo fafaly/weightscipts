@@ -4,7 +4,7 @@ import os
 import sys
 
 universedir='/cygdrive/z/data/WindDB/setting/'
-universedir=''
+#universedir=''
 if len(sys.argv)<2:
 	print 'usage:./runrang.py [start date] [end date]'
 	exit()

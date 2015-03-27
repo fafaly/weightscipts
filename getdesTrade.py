@@ -7,14 +7,14 @@ import time
 import math
 import globalfunc
 
-destrddir='/z/data/WindDB/production5/portfolio/desTrade/'
-actholddir='/z/data/WindDB/production5/portfolio/actHolding/'
-desholddir='/z/data/WindDB/production5/portfolio/desHolding/'
+destrddir='/z/data/WindDB/production5/portfolio_liuyi/desTrade/'
+actholddir='/z/data/WindDB/production5/portfolio_liuyi/actHolding/'
+desholddir='/z/data/WindDB/production5/portfolio_liuyi/desHolding/'
 universedir='/cygdrive/z/data/WindDB/setting/universe/'
-destrddir=''
-actholddir=''
-desholddir=''
-universedir=''
+#destrddir=''
+#actholddir=''
+#desholddir=''
+#universedir=''
 
 desholddict={}
 lactholddict={}
@@ -63,18 +63,18 @@ if reader:
 #=================================
 #            get vol
 #=================================
-univername=universedir+ldate+'_universe.csv'
+univername=universedir+cdate+'_universe.csv'
 print 'get vol from %s' % univername
 reader=csv.reader(file(univername,'r'))
 next(reader)
 for line in reader:
-	index=12
-	if int(line[12])>0:
-		index=12
-	elif int(line[13])>0:
+	index=13
+	if int(line[13])>0:
 		index=13
 	elif int(line[14])>0:
 		index=14
+	elif int(line[15])>0:
+		index=15
 	else:
 		voldict[line[0]]=0
 	voldict[line[0]]=int(line[index])
@@ -86,29 +86,39 @@ print 'Begin write data to %s' % fname
 #           write data
 #=================================
 fd=open(fname,'w+')
-fd.write('#tk,shr,BOT,EOT,duration\n')
+fd.write('#tk,desShr,desStartTime,desEndTime,desDuration,vol5\n')
 btimestr='0940'
 btime=time.mktime(time.strptime(btimestr,"%H%M"))
-for key in desholddict:
+#put desholddict in order
+desholdlist=sorted(desholddict.iteritems(),key=lambda asd:asd[0],reverse=False)
+for line in desholdlist:
+	key=line[0]
+	shr=int(line[1])
 	if lactholddict.has_key(key):
-		destrd=desholddict[key] - lactholddict[key]
+		destrd=shr - lactholddict[key]
+		destrd-=destrd%100
 	else:
-		destrd=desholddict[key]
+		destrd=shr
 	avgvol=voldict[key]*0.05/240
 	if avgvol==0:
 		durtime=0
 	else:
-		durtime=math.ceil((abs(destrd)/avgvol)*2)
+		durtime=math.ceil(abs(destrd)/avgvol)
+	if durtime < 10 and durtime != 0:
+		durtime = 10
 	if(durtime<0):
 		destrd=0
 		etimestr=btimestr
 		durtime=0
+	elif durtime>=110:
+		etime=btime+durtime*60+90
+		etimestr=time.strftime("%H%M",time.localtime(etime))
 	else:
 		etime=btime+durtime*60
 		etimestr=time.strftime("%H%M",time.localtime(etime))
-	fd.write("%s,%d,%s,%s,%d\n" % (key,destrd,btimestr,etimestr,durtime))
+	fd.write("%s,%d,%s,%s,%d,%d\n" % (key,destrd,btimestr,etimestr,durtime,voldict[key]))
 
 fd.close()
 
-print 'Write finsh.'
+print 'Write finish.'
 

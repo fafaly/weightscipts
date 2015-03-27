@@ -4,7 +4,7 @@ import os
 import sys
 
 fdatedir='/z/data/WindDB/setting/'
-fdatedir=''
+#fdatedir=''
 fname='tradingDates.csv'
 
 def getNextDate(cdate):

@@ -6,12 +6,12 @@ import datetime
 import time
 import globalfunc
 
-cacsdir='/z/data/WindDB/cacs/'
-actholdingdir='/z/data/WindDB/production5/portfolio/actHolding/'
-scacsdir='/z/data/WindDB/production5/portfolio/cacs/'
-cacsdir=''
-actholdingdir=''
-scacsdir=''
+cacsdir='/z/data/WindTerminal/cacs/old/'
+actholdingdir='/z/data/WindDB/production5/portfolio_liuyi/actHolding/'
+scacsdir='/z/data/WindDB/production5/portfolio_liuyi/cacs/'
+#cacsdir=''
+#actholdingdir=''
+#scacsdir=''
 
 print '----------get actual hold BOD-----------'
 

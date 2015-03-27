@@ -8,14 +8,14 @@ import time
 import globalfunc
 
 
-actholddir='/z/data/WindDB/production5/portfolio/actHolding/'
-desholddir='/z/data/WindDB/production5/portfolio/desHolding/'
-weightdir='/z/data/WindDB/production5/portfolio/weight/'
-dpxdir='/z/data/WindDB/dpx/'
-actholddir=''
-desholddir=''
-weightdir=''
-dpxdir=''
+actholddir='/z/data/WindDB/production5/portfolio_liuyi/actHolding/'
+desholddir='/z/data/WindDB/production5/portfolio_liuyi/desHolding/'
+weightdir='/z/data/WindDB/production5/portfolio_liuyi/weight/'
+universedir='/z/data/WindDB/setting/universe/'
+#actholddir=''
+#desholddir=''
+#weightdir=''
+#dpxdir=''
 
 print '----------get des hold-----------'
 
@@ -54,10 +54,10 @@ print 'cash:%s' % cash
 #    get the close price value
 #=================================
 clsdict={}
-reader = csv.reader(file(dpxdir+ldate+'.dpx.csv','r'))
+reader = csv.reader(file(universedir+cdate+'_universe.csv','r'))
 next(reader)
 for line in reader:
-	clsdict[line[0][0:6]]=float(line[6])
+	clsdict[line[0]]=float(line[50])
 
 #=================================
 #   write data to desire hold
@@ -66,15 +66,16 @@ fname=desholddir+cdate+'.desHolding.csv'
 print 'write to %s' % fname
 reader = csv.reader(file(weightdir+cdate+'.weight.csv','rb'))
 fd=open(fname,'w+')
-fd.write('#tk,shares\n')
+fd.write('#tk,shr,lastGoodCls\n')
 next(reader)#ignore the first line
 for line in reader:
 	tk=line[0]
 	if clsdict.has_key(tk):
 		shr=cash*float(line[1])/clsdict[tk]
+		shr-=shr%100
 	else:
 		shr=0
-	fd.write("%s,%d\n" % (tk,shr))
+	fd.write("%s,%d,%f\n" % (tk,shr,clsdict[tk]))
 
 fd.close()
 
