@@ -91,19 +91,45 @@ btimestr='0940'
 btime=time.mktime(time.strptime(btimestr,"%H%M"))
 #put desholddict in order
 desholdlist=sorted(desholddict.iteritems(),key=lambda asd:asd[0],reverse=False)
-for line in desholdlist:
-	key=line[0]
-	shr=int(line[1])
-	if lactholddict.has_key(key):
-		destrd=shr - lactholddict[key]
-		destrd-=destrd%100
+lactholdlist=sorted(lactholddict.iteritems(),key=lambda asd:asd[0],reverse=False)
+i=0
+j=0
+desholdlen=len(desholdlist)
+lactholdlen=len(lactholdlist)
+while i<desholdlen or j < lactholdlen:
+	key=''
+	if i>=desholdlen:
+		destrd=-lactholdlist[j][1]
+		key=lactholdlist[j][0]
+		j+=1
+	elif j>= lactholdlen:
+		key=desholdlist[i][0]
+		destrd=desholdlist[i][1]
+		i+=1
 	else:
-		destrd=shr
+		deskey=desholdlist[i][0]
+		desshr=desholdlist[i][1]
+		lactshr=lactholdlist[j][1]
+		lactkey=lactholdlist[j][0]
+		if deskey == lactkey:
+			key=deskey
+			destrd=desshr-lactshr
+			i+=1
+			j+=1
+		elif deskey >lactkey:
+			key=lactkey
+			destrd=-lactshr
+			j+=1
+		elif deskey < lactkey:
+			key=deskey
+			destrd=desshr
+			i+=1
+	if destrd>0:
+		destrd-=destrd%100
 	avgvol=voldict[key]*0.05/240
+	durtime=0
 	if avgvol==0:
 		durtime=0
-	else:
-		durtime=math.ceil(abs(destrd)/avgvol)
 	if durtime < 10 and durtime != 0:
 		durtime = 10
 	if(durtime<0):
@@ -116,7 +142,8 @@ for line in desholdlist:
 	else:
 		etime=btime+durtime*60
 		etimestr=time.strftime("%H%M",time.localtime(etime))
-	fd.write("%s,%d,%s,%s,%d,%d\n" % (key,destrd,btimestr,etimestr,durtime,voldict[key]))
+	if destrd != 0 and abs(destrd)>300:
+		fd.write("%s,%d,%s,%s,%d,%d\n" % (key,destrd,btimestr,etimestr,durtime,voldict[key]))
 
 fd.close()
 

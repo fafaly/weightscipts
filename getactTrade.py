@@ -6,6 +6,7 @@ import sys
 import datetime
 import time
 import globalfunc
+import math
 
 ipxdir='/z/data/WindTerminal/ipx/old/'
 acttrddir='/z/data/WindDB/production5/portfolio_liuyi/actTrade/'
@@ -77,6 +78,7 @@ reader = csv.reader(file(destrdname,'r'))
 print 'Begin to read %s' % destrdname
 print 'Begin to write data %s' % fname
 next(reader)
+actshr=0
 for line in reader:
 	tk = line[0]
 	shr = int(line[1])
@@ -85,24 +87,30 @@ for line in reader:
 	totalshr=0
 	clspx=clsdict[tk]
 	durtime=0
+	allcomplete=1
 	for i in range(12,240,2):
 		cvol=float(ipxdict[tk][i])*0.05
+		cvol=math.floor(cvol)
 		cpx = float(ipxdict[tk][i-1])
+		cpx=round(cpx,2)
 		#limit up or down
 		if cpx>=clspx*1.1 or cpx <= clspx*0.9:
+			allcomplete=0
 			break
 		dif=absshr-cvol
 		if dif >= 0:
-			totalpx+=cvol*cpx
+			totalpx+=round(cvol*cpx,2)
 			totalshr+=cvol
 			absshr-=cvol
 			continue
 		elif dif<0:
 			totalshr+=absshr
-			totalpx+=absshr*cpx
+			totalpx+=round(absshr*cpx,2)
 			break
 		else:
 			break
+	if allcomplete==1:
+		totalshr=abs(shr)
 	durtime=i-10
 	if totalshr>0:
 		avgpx=totalpx/totalshr
@@ -110,13 +118,17 @@ for line in reader:
 		avgpx=float(ipxdict[tk][13])
 	if avgpx==0:
 		durtime=0
+	if shr>0:
+		actshr=totalshr
+	else:
+		actshr=-totalshr
 	btimestr='0940'
 	etimestr=CalEndTime(btimestr,durtime)
-	fd.write(('%s,%s,%s,%s,%s,%d,%s,%s,%d,%f,%f\n') % (tk,line[1],line[2],line[3],line[4],totalshr,btimestr,etimestr,durtime,avgpx,clspx))
+	fd.write(('%s,%s,%s,%s,%s,%d,%s,%s,%d,%f,%f\n') % (tk,line[1],line[2],line[3],line[4],actshr,btimestr,etimestr,durtime,avgpx,clspx))
 
 fd.close()
 
 print 'Write finish'
-	
+
 
 

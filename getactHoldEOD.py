@@ -49,9 +49,9 @@ for line in reader:
 #    get actual hold BOD
 #=================================
 print "Begin get date's BOD actual hold"
-lactholdname=actholddir+cdate+'.actHoldingBOD.csv'
+acttradename=actholddir+cdate+'.actHoldingBOD.csv'
 actholddict={}
-reader=csv.reader(file(lactholdname))
+reader=csv.reader(file(acttradename))
 next(reader)
 i=0
 cash=0
@@ -84,14 +84,14 @@ nsell=0
 sellamt=0
 nstock=0
 tradepnl=0
-lactholdname=acttrddir+cdate+'.actTrade.csv'
+acttradename=acttrddir+cdate+'.actTrade.csv'
 acttrddict={}
-reader=csv.reader(file(lactholdname,'r'))
+reader=csv.reader(file(acttradename,'r'))
 next(reader)
 for line in reader:
 	tk=line[0]
-	shr=int(line[1])
-	avgpx=float(line[9])
+	shr=int(line[5])
+	avgpx=round(float(line[9]),2)
 	nstock+=1
 	expx=float(line[9])
 	tradepnl+=(clsdict[tk]-expx)*shr
@@ -108,9 +108,10 @@ for line in reader:
 		sellamt+=-shr*avgpx
 	comtax+=abs(happencash)*2.5/10000
 	if shr<0:
-		stamptax+=-shr*0.001
+		stamptax+=happencash*0.001
 	if line[0][0]=='6':
 		transtax+=abs(happencash)*1.7/10000
+		transtax=0#temperary use zero to test
 	tcash+=happencash	
 cash+=tcash-comtax-stamptax-transtax
 print cash
@@ -128,7 +129,7 @@ for key in actholddict:
 		stockvalue+=actholddict[key]*clsdict[key]
 #cash+=holdpnl
 
-fd.write('CASH,1,%f\n' % cash)
+fd.write('CASH,1,%.2f\n' % cash)
 actholdlist=sorted(actholddict.iteritems(),key=lambda asd:asd[0],reverse=False)
 for line in actholdlist:
 	key = line[0]
@@ -139,7 +140,8 @@ for line in actholdlist:
 	else:
 		cls=0
 		print 'clsdict has not key:%s' % key
-	fd.write("%s,%s,%f\n" % (key,line[1],cls))
+	if line[1] != 0 :
+		fd.write("%s,%s,%.2f\n" % (key,line[1],cls))
 
 fd.close()
 print 'write finish.'

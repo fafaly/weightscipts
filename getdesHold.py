@@ -6,7 +6,7 @@ import sys
 import datetime
 import time
 import globalfunc
-
+import math
 
 actholddir='/z/data/WindDB/production5/portfolio_liuyi/actHolding/'
 desholddir='/z/data/WindDB/production5/portfolio_liuyi/desHolding/'
@@ -40,14 +40,18 @@ print 'last date time is %s' % ldate
 reader = csv.reader(file(actholddir+cdate+'.actHoldingBOD.csv','r'))
 next(reader)
 i=1
+stockvalue=0
 clsdict={}
 for line in reader:
 	if i==1:
 		cash=float(line[2])
 		i=i+1
 	else:
-		clsdict[line[0]]=float(line[2])
+		shr=int(line[1])
+		cls=float(line[2])
+		stockvalue+=shr*cls
 
+cash+=stockvalue
 print 'cash:%s' % cash
 
 #=================================
@@ -70,12 +74,10 @@ fd.write('#tk,shr,lastGoodCls\n')
 next(reader)#ignore the first line
 for line in reader:
 	tk=line[0]
-	if clsdict.has_key(tk):
-		shr=cash*float(line[1])/clsdict[tk]
-		shr-=shr%100
-	else:
-		shr=0
-	fd.write("%s,%d,%f\n" % (tk,shr,clsdict[tk]))
+	shr=cash*float(line[1])/clsdict[tk]
+	shr=math.floor(shr)
+	if shr != 0:
+		fd.write("%s,%d,%f\n" % (tk,shr,clsdict[tk]))
 
 fd.close()
 
