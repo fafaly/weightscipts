@@ -2,6 +2,8 @@
 
 import os
 import sys
+import time
+import datetime
 
 fdatedir='/z/data/WindDB/setting/'
 #fdatedir=''
@@ -30,5 +32,24 @@ def getLastDate(cdate):
 		else:
 			ldate=line[0:8]
 	return -1
+
+#=================================
+#   dtime:duration time(minuite)
+#=================================
+def CalEndTime(btimestr,durtime):
+	if durtime>110:
+		durtime+=90
+	durtime=durtime*60
+	btime=time.mktime(time.strptime(btimestr,"%H%M"))
+	etimestr=btimestr
+	if(durtime<0):
+		etimestr=btimestr
+		durtime=0
+	elif durtime==0:
+		durtime+=60
+	else:
+		etime=btime+durtime
+		etimestr=time.strftime("%H%M",time.localtime(etime))
+	return etimestr
 
 

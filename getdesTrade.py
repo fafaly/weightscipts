@@ -63,6 +63,7 @@ if reader:
 #=================================
 #            get vol
 #=================================
+vol5dict={}
 univername=universedir+cdate+'_universe.csv'
 print 'get vol from %s' % univername
 reader=csv.reader(file(univername,'r'))
@@ -76,8 +77,11 @@ for line in reader:
 	elif int(line[15])>0:
 		index=15
 	else:
-		voldict[line[0]]=0
+		voldict[line[0]]=480000
+		vol5dict[line[0]]=0
+		continue
 	voldict[line[0]]=int(line[index])
+	vol5dict[line[0]]=voldict[line[0]]
 
 fname=destrddir+cdate+'.desTrade.csv'
 print 'Begin write data to %s' % fname
@@ -127,23 +131,20 @@ while i<desholdlen or j < lactholdlen:
 	if destrd>0:
 		destrd-=destrd%100
 	avgvol=voldict[key]*0.05/240
-	durtime=0
+	if avgvol==0:
+		durtime=0
+	else:
+		durtime=abs(destrd/avgvol)
 	if avgvol==0:
 		durtime=0
 	if durtime < 10 and durtime != 0:
 		durtime = 10
 	if(durtime<0):
 		destrd=0
-		etimestr=btimestr
 		durtime=0
-	elif durtime>=110:
-		etime=btime+durtime*60+90
-		etimestr=time.strftime("%H%M",time.localtime(etime))
-	else:
-		etime=btime+durtime*60
-		etimestr=time.strftime("%H%M",time.localtime(etime))
+	etimestr=globalfunc.CalEndTime(btimestr,durtime)
 	if destrd != 0 and abs(destrd)>300:
-		fd.write("%s,%d,%s,%s,%d,%d\n" % (key,destrd,btimestr,etimestr,durtime,voldict[key]))
+		fd.write("%s,%d,%s,%s,%d,%d\n" % (key,destrd,btimestr,etimestr,durtime,vol5dict[key]))
 
 fd.close()
 
